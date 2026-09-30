@@ -1,0 +1,757 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Danfo Rush</title><style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  background:#111;
+  overflow:hidden;
+  font-family:Arial,sans-serif;
+  touch-action:none;
+}
+
+#game{
+  width:100vw;
+  height:100vh;
+  position:relative;
+  background:#555;
+  overflow:hidden;
+}
+
+#road{
+  position:absolute;
+  width:70%;
+  height:100%;
+  left:15%;
+  background:#333;
+  border-left:6px solid #eee;
+  border-right:6px solid #eee;
+}
+
+/* ROAD LINES */
+
+.line{
+  position:absolute;
+  width:8px;
+  height:70px;
+  background:white;
+  left:50%;
+  transform:translateX(-50%);
+  opacity:.8;
+}
+
+/* DANFO */
+
+#player{
+  position:absolute;
+  width:72px;
+  height:125px;
+  bottom:80px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#ff6a00;
+  border:5px solid #111;
+  border-radius:12px;
+  z-index:10;
+  box-shadow:0 5px 12px rgba(0,0,0,.5);
+}
+
+.windshield{
+  position:absolute;
+  top:8px;
+  left:8px;
+  right:8px;
+  height:38px;
+  background:#172027;
+  border:3px solid #111;
+  border-radius:6px;
+}
+
+.stripe{
+  position:absolute;
+  top:55px;
+  left:0;
+  right:0;
+  height:17px;
+  background:white;
+}
+
+.label{
+  position:absolute;
+  top:77px;
+  left:0;
+  right:0;
+  text-align:center;
+  color:white;
+  font-size:10px;
+  font-weight:bold;
+}
+
+.tyre1,.tyre2{
+  position:absolute;
+  width:10px;
+  height:28px;
+  background:#111;
+  border-radius:5px;
+  top:25px;
+}
+
+.tyre1{left:-9px}
+.tyre2{right:-9px}
+
+.light1,.light2{
+  position:absolute;
+  width:10px;
+  height:7px;
+  background:#fff4a3;
+  bottom:7px;
+  border-radius:3px;
+}
+
+.light1{left:8px}
+.light2{right:8px}
+
+/* SCORE */
+
+#score{
+  position:absolute;
+  top:15px;
+  left:15px;
+  color:white;
+  font-size:20px;
+  font-weight:bold;
+  z-index:30;
+  background:rgba(0,0,0,.65);
+  padding:8px 12px;
+  border-radius:10px;
+}
+
+/* COMMENTS */
+
+#comment{
+  position:absolute;
+  top:65px;
+  left:50%;
+  transform:translateX(-50%);
+  color:#111;
+  background:white;
+  padding:10px 15px;
+  border-radius:15px;
+  font-size:15px;
+  font-weight:bold;
+  z-index:50;
+  display:none;
+  white-space:nowrap;
+  box-shadow:0 3px 8px rgba(0,0,0,.4);
+}
+
+#comment:after{
+  content:"";
+  position:absolute;
+  bottom:-9px;
+  left:50%;
+  transform:translateX(-50%);
+  border-left:9px solid transparent;
+  border-right:9px solid transparent;
+  border-top:10px solid white;
+}
+
+/* BUS STOP */
+
+#stopName{
+  position:absolute;
+  top:115px;
+  left:50%;
+  transform:translateX(-50%);
+  color:white;
+  background:#111;
+  padding:8px 15px;
+  border-radius:10px;
+  font-size:17px;
+  font-weight:bold;
+  z-index:30;
+  display:none;
+  white-space:nowrap;
+}
+
+#passengers{
+  position:absolute;
+  top:160px;
+  left:50%;
+  transform:translateX(-50%);
+  color:white;
+  background:#1976d2;
+  padding:8px 12px;
+  border-radius:10px;
+  font-size:15px;
+  z-index:30;
+  display:none;
+  white-space:nowrap;
+}
+
+#busStop{
+  position:absolute;
+  right:0;
+  width:30%;
+  height:140px;
+  background:#777;
+  border-left:5px solid white;
+  z-index:5;
+  display:none;
+}
+
+#busStopSign{
+  position:absolute;
+  right:8px;
+  top:12px;
+  background:#1565c0;
+  color:white;
+  padding:9px;
+  border-radius:8px;
+  font-weight:bold;
+  font-size:12px;
+}
+
+/* PASSENGERS */
+
+.person{
+  position:absolute;
+  right:45px;
+  width:18px;
+  height:30px;
+  background:#ffcc80;
+  border-radius:10px;
+}
+
+/* SWIPE HELP */
+
+#swipeHelp{
+  position:absolute;
+  bottom:25px;
+  left:50%;
+  transform:translateX(-50%);
+  color:white;
+  background:rgba(0,0,0,.55);
+  padding:7px 12px;
+  border-radius:10px;
+  font-size:13px;
+  z-index:20;
+}
+
+/* COINS */
+
+.coin{
+  position:absolute;
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  background:#ffd700;
+  border:3px solid #b8860b;
+  z-index:8;
+}
+
+.coin:after{
+  content:"₦";
+  position:absolute;
+  color:#8b6508;
+  font-weight:bold;
+  font-size:13px;
+  left:5px;
+  top:2px;
+}
+
+/* TRAFFIC VEHICLES */
+
+.trafficCar{
+  position:absolute;
+  width:55px;
+  height:90px;
+  border-radius:10px;
+  z-index:6;
+  border:3px solid #111;
+}
+
+</style></head><body><div id="game">  <div id="road"><div class="line" style="top:0"></div>
+<div class="line" style="top:180px"></div>
+<div class="line" style="top:360px"></div>
+<div class="line" style="top:540px"></div>
+<div class="line" style="top:720px"></div>
+
+  </div>  <div id="score">💰 ₦0</div>  <div id="comment"></div>  <div id="stopName">📍 Bus Stop</div>  <div id="passengers">
+    👥 0 passengers
+  </div>  <div id="busStop"><div id="busStopSign">
+  BUS STOP
+</div>
+
+  </div>  <div id="player"><div class="windshield"></div>
+
+<div class="stripe"></div>
+
+<div class="label">
+  DANFO
+</div>
+
+<div class="tyre1"></div>
+<div class="tyre2"></div>
+
+<div class="light1"></div>
+<div class="light2"></div>
+
+  </div>  <div id="swipeHelp">
+    👆 Swipe left or right to drive
+  </div></div><script>
+
+/* =========================
+   GAME VARIABLES
+========================= */
+
+const player =
+document.getElementById("player");
+
+const game =
+document.getElementById("game");
+
+const scoreDisplay =
+document.getElementById("score");
+
+const comment =
+document.getElementById("comment");
+
+const stopName =
+document.getElementById("stopName");
+
+const passengerDisplay =
+document.getElementById("passengers");
+
+const busStop =
+document.getElementById("busStop");
+
+let playerX = 50;
+
+let money = 0;
+
+let passengers = 0;
+
+let stopActive = false;
+
+let currentStop = "";
+
+let touchStartX = 0;
+
+
+/* =========================
+   BUS STOPS
+========================= */
+
+const stops = [
+
+  "Ikpa Road",
+  "Abak Road",
+  "Iyana-Iba",
+  "Plaza",
+  "Yaba",
+  "Ojuelegba",
+  "Ikeja",
+  "CMS"
+
+];
+
+
+/* =========================
+   NIGERIAN COMMENTS
+========================= */
+
+const comments = [
+
+  "⚠️ Ikpa Road — ONE CHANCE!",
+
+  "🛣️ Abak Road!",
+
+  "🗣️ I no dey go!",
+
+  "🗣️ Wida you Eyen ino?",
+
+  "🗣️ Adiok another fi!",
+
+  "🗣️ Usor!",
+
+  "🗣️ Fyn gal, you no dey go?",
+
+  "🗣️ Abeg commot for road!",
+
+  "🚦 Plaza traffic!",
+
+  "🚌 Passenger dey wait!",
+
+  "🚕 Taxi dey overtake!",
+
+  "⚠️ Watch that keke!",
+
+  "😂 Driver, abeg slow down!",
+
+  "👀 Check your side!",
+
+  "🚦 Traffic light ahead!",
+
+  "💰 Make money, driver!"
+
+];
+
+
+/* =========================
+   SHOW COMMENT
+========================= */
+
+function showComment(){
+
+  if(stopActive) return;
+
+  const message =
+  comments[
+    Math.floor(
+      Math.random()*comments.length
+    )
+  ];
+
+  comment.textContent = message;
+
+  comment.style.display = "block";
+
+  setTimeout(()=>{
+
+    comment.style.display = "none";
+
+  },2500);
+
+}
+
+setInterval(showComment,5000);
+
+
+/* =========================
+   SWIPE CONTROLS
+========================= */
+
+game.addEventListener(
+  "touchstart",
+  function(e){
+
+    touchStartX =
+    e.touches[0].clientX;
+
+  },
+  {passive:true}
+);
+
+
+game.addEventListener(
+  "touchend",
+  function(e){
+
+    const touchEndX =
+    e.changedTouches[0].clientX;
+
+    const difference =
+    touchEndX-touchStartX;
+
+    if(Math.abs(difference)<25)
+    return;
+
+    if(difference<0){
+
+      moveLeft();
+
+    }else{
+
+      moveRight();
+
+    }
+
+  },
+  {passive:true}
+);
+
+
+function moveLeft(){
+
+  if(stopActive) return;
+
+  playerX -= 7;
+
+  if(playerX<20)
+  playerX=20;
+
+  player.style.left =
+  playerX+"%";
+}
+
+
+function moveRight(){
+
+  if(stopActive) return;
+
+  playerX += 7;
+
+  if(playerX>80)
+  playerX=80;
+
+  player.style.left =
+  playerX+"%";
+}
+
+
+/* =========================
+   COINS
+========================= */
+
+function createCoin(){
+
+  if(stopActive) return;
+
+  const coin =
+  document.createElement("div");
+
+  coin.className="coin";
+
+  coin.style.left =
+  (25+Math.random()*50)+"%";
+
+  coin.style.top="-40px";
+
+  game.appendChild(coin);
+
+  let y=-40;
+
+  const fall =
+  setInterval(()=>{
+
+    if(stopActive){
+
+      clearInterval(fall);
+      coin.remove();
+
+      return;
+    }
+
+    y+=5;
+
+    coin.style.top =
+    y+"px";
+
+    if(y>window.innerHeight){
+
+      clearInterval(fall);
+
+      coin.remove();
+
+      return;
+    }
+
+    const p =
+    player.getBoundingClientRect();
+
+    const c =
+    coin.getBoundingClientRect();
+
+    if(
+
+      p.left<c.right &&
+      p.right>c.left &&
+      p.top<c.bottom &&
+      p.bottom>c.top
+
+    ){
+
+      money += 100;
+
+      scoreDisplay.textContent =
+      "💰 ₦"+money;
+
+      clearInterval(fall);
+
+      coin.remove();
+
+    }
+
+  },20);
+}
+
+setInterval(createCoin,1200);
+
+
+/* =========================
+   BUS STOP
+========================= */
+
+function createBusStop(){
+
+  if(stopActive) return;
+
+  stopActive=true;
+
+  currentStop =
+  stops[
+    Math.floor(
+      Math.random()*stops.length
+    )
+  ];
+
+  stopName.textContent =
+  "📍 "+currentStop;
+
+  stopName.style.display =
+  "block";
+
+  passengers =
+  Math.floor(Math.random()*5)+1;
+
+  passengerDisplay.textContent =
+  "👥 "+passengers+
+  " passengers waiting";
+
+  passengerDisplay.style.display =
+  "block";
+
+  busStop.style.display =
+  "block";
+
+
+  for(let i=0;i<passengers;i++){
+
+    const person =
+    document.createElement("div");
+
+    person.className="person";
+
+    person.style.top =
+    (45+i*22)+"px";
+
+    busStop.appendChild(person);
+
+  }
+
+}
+
+
+/* =========================
+   BOARD PASSENGERS
+========================= */
+
+function boardPassengers(){
+
+  if(!stopActive)
+  return;
+
+  const fare =
+  passengers*500;
+
+  money += fare;
+
+  scoreDisplay.textContent =
+  "💰 ₦"+money;
+
+  stopName.textContent =
+  "✅ "+currentStop+
+  " +₦"+fare;
+
+  passengerDisplay.textContent =
+  "🚌 Passengers boarded!";
+
+
+  setTimeout(()=>{
+
+    busStop.style.display =
+    "none";
+
+    stopName.style.display =
+    "none";
+
+    passengerDisplay.style.display =
+    "none";
+
+    document
+    .querySelectorAll(".person")
+    .forEach(p=>p.remove());
+
+    passengers=0;
+
+    stopActive=false;
+
+  },1500);
+
+}
+
+
+busStop.addEventListener(
+  "click",
+  boardPassengers
+);
+
+busStop.addEventListener(
+  "touchstart",
+  boardPassengers
+);
+
+
+/* =========================
+   BUS STOPS EVERY 12 SECONDS
+========================= */
+
+setInterval(
+  createBusStop,
+  12000
+);
+
+
+/* =========================
+   MOVING ROAD
+========================= */
+
+let roadOffset=0;
+
+function moveRoad(){
+
+  roadOffset+=5;
+
+  if(roadOffset>180)
+  roadOffset=0;
+
+  document
+  .querySelectorAll(".line")
+  .forEach((line,index)=>{
+
+    let top =
+    index*180+roadOffset;
+
+    if(top>window.innerHeight)
+    top-=900;
+
+    line.style.top =
+    top+"px";
+
+  });
+
+  requestAnimationFrame(moveRoad);
+
+}
+
+moveRoad();
+
+
+/* =========================
+   START COMMENT
+========================= */
+
+setTimeout(
+  showComment,
+  1000
+);
+
+</script></body>
+</html>
